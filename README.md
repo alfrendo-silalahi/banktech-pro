@@ -1,4 +1,4 @@
-# Bank Tech Pro (INI AMANDA)
+# Bank Tech Pro (INI ODI)
 
 Repository Bank Tech Kelompok 5 Bootcamp
 
