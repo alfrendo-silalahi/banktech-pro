@@ -39,7 +39,7 @@ export function TransactionTable() {
   const prevPage = () => setCurrentPage((prev) => Math.max(prev - 1, 1));
 
   return (
-    <div className="p-5 font-sans bg-gray-50 rounded-lg shadow-md">
+    <div className="mt-10 ml-10 mr-10 p-5 font-sans bg-gray-50 border border-gray-300 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">
           Daftar Transaksi
