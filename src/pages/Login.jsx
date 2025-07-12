@@ -53,7 +53,7 @@ export default function Login() {
 
             <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                <label className="block mb-1 font-medium">Email*</label>
+                <label className="block mb-1 font-medium">Email<span className="text-red-500">*</span></label>
                 <input
                     type="email"
                     value={email}
@@ -62,17 +62,17 @@ export default function Login() {
                 />
                 </div>
                 <div>
-                <label className="block mb-1 font-medium">Password*</label>
+                <label className="block mb-1 font-medium">Password<span className="text-red-500">*</span></label>
                 <input
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4665F6]"
                 />
                 </div>
                 <button
                 type="submit"
-                className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition"
+                className="w-full bg-[#8196F4] text-white py-2 rounded-md hover:bg-[#4665F6] transition"
                 >
                 Sign In
                 </button>
@@ -85,13 +85,15 @@ export default function Login() {
         </div>
 
         {/* Right Side - Branding */}
-        <div className="hidden md:flex w-1/2 bg-orange-500 text-white flex-col justify-center items-center">
+        <div className="hidden md:flex w-1/2 bg-[#4665F6] text-white flex-col justify-center items-center">
             <div className="flex flex-col items-center">
-            <div className="w-8 h-8 bg-white mb-4"></div>
-            <h1 className="text-3xl font-bold">BankTech Pro</h1>
-            <p className="text-center mt-2 px-8">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-            </p>
+                <div className="flex items-center gap-4 mb-4">
+                    <img src="src/assets/LOGO.svg" alt="logo" className="h-16 w-16 object-contain" />
+                    <h1 className="text-4xl font-bold">BankTech Pro</h1>
+                </div>
+                <p className="text-center mt-2 px-8">
+                    Your Digital Banking Partner
+                </p>
             </div>
         </div>
     </div>
