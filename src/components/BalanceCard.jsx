@@ -19,7 +19,7 @@ export default function BalanceCard() {
     setCurrentCard((p) => (p - 1 + cards.length) % cards.length);
 
   return (
-    <div className="ml-10 relative w-80 rounded-2xl bg-gray-200 p-6 px-8 shadow-lg">
+    <div className="ml-10 mt-10 relative w-80 rounded-2xl bg-white border border-gray-300 p-6 px-8">
       {/* panah kiri */}
       {currentCard > 0 && (
         <button
