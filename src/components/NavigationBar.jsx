@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-const Navbar = () => {
+export const Navbar = () => {
   const [isDark, setIsDark] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
@@ -13,7 +13,7 @@ const Navbar = () => {
   return (
     <>
       {/* Sticky Navbar */}
-      <nav className="fixed top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b dark:border-gray-700 transition-colors">
+      <nav className="top-0 left-0 right-0 z-50 w-full flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 border-b dark:border-gray-700 transition-colors">
         {/* Left: Hamburger & Logo */}
         <div className="flex items-center space-x-4">
           <button
