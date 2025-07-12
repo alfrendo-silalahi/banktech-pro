@@ -8,7 +8,7 @@ const usePreferensiStore = create(
     (set) => ({
       // State awal
       itemsPerPage: 10,
-      filterTipe: 'All', // Opsi: 'All', 'Expanses', 'Income'
+      filterTipe: 'All', // Opsi: 'All', 'Expenses', 'Income'
       isModalOpen: false,
 
       // Actions untuk mengubah state

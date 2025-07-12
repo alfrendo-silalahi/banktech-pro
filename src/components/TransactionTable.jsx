@@ -2,15 +2,35 @@
 import { useState, useEffect } from "react";
 import usePreferensiStore from "../hooks/usePreferensiStore";
 import ModalPreferensi from "./ModalPreferensi";
+import formatRupiah from "../hooks/formatRupiah";
+import SummaryTransaction from "../pages/SummaryTransaction";
 
-// --- Data Dummy Baru ---
-const dummyData = Array.from({ length: 25 }, (_, i) => ({
-  id: i + 1,
-  nama: `User ${i + 1}`,
-  nomorRekening: `8219837${String(i + 1).padStart(2, "0")}`,
-  tipeTransaksi: i % 2 === 0 ? "Income" : "Expenses", // Mengganti status dengan tipe transaksi
-  nominal: Math.floor(Math.random() * 5000000) + 100000,
-}));
+// Data dummy tetap di sini sebagai sumber data utama
+const generateDummyData = () => {
+  const data = [];
+  const today = new Date();
+  
+  for (let i = 0; i < 25; i++) {
+    const transactionDate = new Date();
+    if (i >= 12) {
+      transactionDate.setMonth(today.getMonth() - 1);
+    }
+    
+    data.push({
+      id: i + 1,
+      nama: `Transaksi ${i + 1}`,
+      nomorRekening: `8219837${String(i + 1).padStart(2, '0')}`,
+      tipeTransaksi: i % 2 === 0 ? 'Income' : 'Expenses',
+      nominal: Math.floor(Math.random() * 2000000) + 50000,
+      tanggal: transactionDate,
+    });
+  }
+  return data;
+};
+
+const dummyData = generateDummyData();
+console.log(dummyData);
+
 
 export function TransactionTable() {
   // Ambil state dan actions dari store Zustand
@@ -51,6 +71,8 @@ export function TransactionTable() {
           ⚙️ Preferences
         </button>
       </div>
+
+      <SummaryTransaction data={dummyData} />
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse mb-4">
@@ -100,10 +122,7 @@ export function TransactionTable() {
                   </span>
                 </td>
                 <td className="p-3 text-gray-800 border-b border-gray-200">
-                  {new Intl.NumberFormat("id-ID", {
-                    style: "currency",
-                    currency: "IDR",
-                  }).format(item.nominal)}
+                  {formatRupiah(item.nominal)}
                 </td>
               </tr>
             ))}
