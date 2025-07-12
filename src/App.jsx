@@ -4,5 +4,4 @@ import BalanceCard from "./components/BalanceCard";
 function App() {
   return <BalanceCard />;
 }
-
 export default App;
