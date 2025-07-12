@@ -6,9 +6,9 @@ import ModalPreferensi from "./ModalPreferensi";
 // --- Data Dummy Baru ---
 const dummyData = Array.from({ length: 25 }, (_, i) => ({
   id: i + 1,
-  nama: `Pengguna ${i + 1}`,
+  nama: `User ${i + 1}`,
   nomorRekening: `8219837${String(i + 1).padStart(2, "0")}`,
-  tipeTransaksi: i % 2 === 0 ? "Income" : "Transfer", // Mengganti status dengan tipe transaksi
+  tipeTransaksi: i % 2 === 0 ? "Income" : "Expenses", // Mengganti status dengan tipe transaksi
   nominal: Math.floor(Math.random() * 5000000) + 100000,
 }));
 
@@ -19,7 +19,7 @@ export function TransactionTable() {
 
   // Filter data berdasarkan preferensi dari store
   const filteredData = dummyData.filter((item) => {
-    if (filterTipe === "Semua") return true;
+    if (filterTipe === "All") return true;
     return item.tipeTransaksi === filterTipe;
   });
 
@@ -42,13 +42,13 @@ export function TransactionTable() {
     <div className="mt-10 ml-10 mr-10 p-5 font-sans bg-gray-50 border border-gray-300 rounded-lg shadow-md">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">
-          Daftar Transaksi
+          Transaction History
         </h2>
         <button
           onClick={toggleModal}
           className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-md hover:bg-indigo-700 focus:outline-none cursor-pointer"
         >
-          ⚙️ Pengaturan
+          ⚙️ Preferences
         </button>
       </div>
 
@@ -57,19 +57,19 @@ export function TransactionTable() {
           <thead>
             <tr>
               <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 text-left">
-                ID
+                No.
               </th>
               <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 text-left">
-                Nama
+                Name
               </th>
               <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 text-left">
-                Nomor Rekening
+                Account Number
               </th>
               <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 text-left">
-                Tipe Transaksi
+                Transaction Type
               </th>
               <th className="p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 text-left">
-                Nominal
+                Amount
               </th>
             </tr>
           </thead>
@@ -113,7 +113,7 @@ export function TransactionTable() {
 
       <div className="flex justify-between items-center">
         <span className="text-sm text-gray-600">
-          Halaman <strong>{currentPage}</strong> dari{" "}
+          Page <strong>{currentPage}</strong> from{" "}
           <strong>{totalPages > 0 ? totalPages : 1}</strong>
         </span>
         <div className="flex items-center space-x-2">
@@ -122,14 +122,14 @@ export function TransactionTable() {
             disabled={currentPage === 1}
             className="px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300 hover:bg-blue-600 transition-colors"
           >
-            Sebelumnya
+            Prev
           </button>
           <button
             onClick={nextPage}
             disabled={currentPage === totalPages || totalPages === 0}
             className="px-4 py-2 bg-blue-500 text-white rounded-md cursor-pointer disabled:cursor-not-allowed disabled:bg-gray-300 hover:bg-blue-600 transition-colors"
           >
-            Berikutnya
+            Next
           </button>
         </div>
       </div>
