@@ -1,20 +1,18 @@
 import { BrowserRouter, Route, Routes } from "react-router";
+import { AuthProvider } from "./context/AuthProvider";
 import Dashboard from "./pages/Dashboard";
-import "./App.css";
-import Navbar from "./components/NavigationBar";
-import Login from "./pages/Login";
+import SignIn from "./pages/SignIn";
 
 function App() {
   return (
-    <div className="container mx-auto">
-      <BrowserRouter>
-        <Navbar />
+    <BrowserRouter>
+      <AuthProvider>
         <Routes>
+          <Route path="/signin" element={<SignIn />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/signin" element={<Login />} />
         </Routes>
-      </BrowserRouter>
-    </div>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

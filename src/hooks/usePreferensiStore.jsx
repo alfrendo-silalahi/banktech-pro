@@ -1,6 +1,6 @@
 // src/store.js
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 const usePreferensiStore = create(
   // Gunakan middleware 'persist' dari Zustand
@@ -8,7 +8,7 @@ const usePreferensiStore = create(
     (set) => ({
       // State awal
       itemsPerPage: 10,
-      filterTipe: 'All', // Opsi: 'All', 'Expenses', 'Income'
+      filterTipe: "All", // Opsi: 'All', 'Expenses', 'Income'
       isModalOpen: false,
 
       // Actions untuk mengubah state
@@ -16,7 +16,7 @@ const usePreferensiStore = create(
       toggleModal: () => set((state) => ({ isModalOpen: !state.isModalOpen })),
     }),
     {
-      name: 'preferensi-tabel-pengguna', // Nama key di LocalStorage
+      name: "preferensi-tabel-pengguna", // Nama key di LocalStorage
       storage: createJSONStorage(() => localStorage), // Spesifikasikan localStorage
       partialize: (state) => ({
         // Hanya simpan state 'itemsPerPage' dan 'filterTipe'
