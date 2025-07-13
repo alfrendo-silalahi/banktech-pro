@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthProvider";
 
+  {/* signup */}
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -167,7 +168,7 @@ export default function SignUp() {
             <h1 className="text-4xl font-bold">BankTech Pro</h1>
           </div>
           <p className="text-center mt-2 px-8">Your Digital Banking Partner</p>
-        </div>
+        </div> 
       </div>
     </div>
   );
