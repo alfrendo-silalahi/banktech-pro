@@ -28,6 +28,7 @@ export default function SignInForm() {
       const resBody = await res.json();
       login(resBody.accessToken);
     } catch (err) {
+      form.resetFields();
       message.error(err.message || "Sign In Failed!");
     } finally {
       setLoading(false);
