@@ -4,23 +4,24 @@ import usePreferensiStore from "../hooks/usePreferensiStore";
 import ModalPreferensi from "./ModalPreferensi";
 import formatRupiah from "../hooks/formatRupiah";
 import SummaryTransaction from "../pages/SummaryTransaction";
+import SummaryChart from "./SummaryChart";
 
 // Data dummy tetap di sini sebagai sumber data utama
 const generateDummyData = () => {
   const data = [];
   const today = new Date();
   
-  for (let i = 0; i < 25; i++) {
+  // Buat 100 transaksi acak dalam 5 bulan terakhir
+  for (let i = 0; i < 100; i++) { 
     const transactionDate = new Date();
-    if (i >= 12) {
-      transactionDate.setMonth(today.getMonth() - 1);
-    }
+    // Tanggal acak dalam 150 hari terakhir (sekitar 5 bulan)
+    const randomDay = Math.floor(Math.random() * 150);
+    transactionDate.setDate(today.getDate() - randomDay);
     
     data.push({
       id: i + 1,
       nama: `Transaksi ${i + 1}`,
-      nomorRekening: `8219837${String(i + 1).padStart(2, '0')}`,
-      tipeTransaksi: i % 2 === 0 ? 'Income' : 'Expenses',
+      tipeTransaksi: Math.random() > 0.5 ? 'Income' : 'Expenses',
       nominal: Math.floor(Math.random() * 2000000) + 50000,
       tanggal: transactionDate,
     });
@@ -29,8 +30,6 @@ const generateDummyData = () => {
 };
 
 const dummyData = generateDummyData();
-console.log(dummyData);
-
 
 export function TransactionTable() {
   // Ambil state dan actions dari store Zustand
@@ -73,6 +72,10 @@ export function TransactionTable() {
       </div>
 
       <SummaryTransaction data={dummyData} />
+
+      <div className="mt-8">
+        <SummaryChart data={dummyData}/>
+      </div>
 
       <div className="overflow-x-auto">
         <table className="w-full border-collapse mb-4">
