@@ -4,8 +4,6 @@ import SummaryTransactionCard from "../components/SummaryTransactionCard";
 
 function SummaryTransaction({ data = [] }) {
   // Gunakan useMemo untuk kalkulasi total. Logika ini dipindahkan dari file tabel.
-  console.log(data, "ini data");
-
   const ringkasanData = useMemo(() => {
     if (!data || !Array.isArray(data))
       return {
