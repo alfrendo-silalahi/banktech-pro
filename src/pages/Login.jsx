@@ -1,16 +1,17 @@
 import React, { useState } from "react";
-import { Navigate, useNavigate } from "react-router";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 
 export default function Login() {
     
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("");
+     const [showPassword, setShowPassword] = useState(false);
     const [error, setError] = useState(""); 
     const [loading, setLoading] = useState(false);
 
-    // const {login} = useAuth();
-    // const navigate = useNavigate();
+    const {login} = useAuth();
+    const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -21,27 +22,26 @@ export default function Login() {
         const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[^\s]{8,}$/;
 
         if (!emailRegex.test(email)) {
-            // setError("Invalid email format.");
-            // setLoading(false);
             alert('ga berhasil email')
+            setLoading(false);
             return;
         }
 
         if (!passwordRegex.test(password)) {
-            // setError("Invalid email format.");
-            // setLoading(false);
             alert('ga berhasil password')
+            setLoading(false);
             return;
         }
         console.log('berhasil')
         const success = login(email, password)
         if (success) {
-            //navigate("");
+            navigate("/dashboard");
             alert('berhasillll login')
         } 
         else {
             setError("Failed to log in. Please check your credentials.")
         }
+        setLoading(false);
     }
     return (
         <div className="flex min-h-screen">
@@ -58,34 +58,44 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4665F6]"
                 />
                 </div>
-                <div>
+                <div className="relative">
                 <label className="block mb-1 font-medium">Password*</label>
                 <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                    className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#4665F6]"
                 />
+                <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2 top-[35px] text-gray-500 focus:outline-none text-xl">
+                    <i className={showPassword ? "ri-eye-line" : "ri-eye-off-line"}></i>
+                    </button>
                 </div>
                 <button
                 type="submit"
-                className="w-full bg-orange-500 text-white py-2 rounded-md hover:bg-orange-600 transition"
-                >
+                className="w-full bg-[#4665F6] text-white py-2 rounded-md hover:bg-[#46a1f6] transition">
                 Sign In
                 </button>
             </form>
 
             <p className="mt-4 text-center">
-                Don’t have an account? <span className="font-semibold cursor-pointer">Sign Up</span>
+                Don’t have an account? 
+                <span
+                    className="font-semibold cursor-pointer text-black"
+                    onClick={() => navigate("/register")}>
+                    Sign Up
+                    </span>
             </p>
             </div>
         </div>
 
         {/* Right Side - Branding */}
-        <div className="hidden md:flex w-1/2 bg-orange-500 text-white flex-col justify-center items-center">
+        <div className="hidden md:flex w-1/2 bg-[#4665F6] text-white flex-col justify-center items-center">
             <div className="flex flex-col items-center">
             <div className="w-8 h-8 bg-white mb-4"></div>
             <h1 className="text-3xl font-bold">BankTech Pro</h1>
