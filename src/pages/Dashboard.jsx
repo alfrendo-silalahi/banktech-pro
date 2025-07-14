@@ -9,6 +9,7 @@ import TestSummary from "./SummaryTransaction";
 import { useActivity } from "../context/ActivityProvider";
 import { useFirebaseTransactions } from "../hooks/useFirebaseTransactions";
 import { AccountProvider } from "../context/AccountProvider.jsx";
+import SummaryChart from "../components/SummaryChart.jsx";
 
 
 export default function Dashboard() {
@@ -23,14 +24,31 @@ export default function Dashboard() {
     <BaseLayout>
       <AccountProvider>
         <div className="bg-[#F9FAFB]">
-          <div className="flex justify-between items-center p-6">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 items-stretch">
+            {/* <TestSummary />
             <BalanceCard />
-            <button
+            <div className="flex-1 min-w-[100px] ml-5 -mb-10 rounded-2xl border border-gray-300 overflow-hidden">
+              <SummaryChart data={[]}/>
+            </div> */}
+            <div className="md:col-span-3 h-full">
+              <TestSummary />
+            </div>
+
+            {/* BalanceCard */}
+            <div className="md:col-span-4 h-full">
+                <BalanceCard />
+            </div>
+
+            {/* Chart */}
+            <div className="md:col-span-5 h-full">
+              <SummaryChart />
+            </div>
+            {/* <button
               onClick={() => setShowTransferWizard(true)}
               className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors font-medium flex items-center gap-2"
             >
               💸 Transfer Money
-            </button>
+            </button> */}
           </div>
           <TransactionTable />
           <div className="mt-10 ml-10 mr-10">
@@ -38,7 +56,7 @@ export default function Dashboard() {
           </div>
           <div className="mt-10 ml-10 mr-10">
           </div>
-          <TestSummary />
+          {/* <TestSummary /> */}
           
           {showTransferWizard && (
             <TransferWizard onClose={() => setShowTransferWizard(false)} />

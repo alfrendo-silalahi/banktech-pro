@@ -47,7 +47,7 @@ export default function BalanceCard() {
   };
 
   return (
-    <div className="ml-10 mt-10 relative w-80 rounded-2xl bg-white border border-gray-300 p-6 px-8 transition-all duration-300 hover:shadow-lg hover:scale-105">
+    <div className="relative w-full h-full rounded-2xl bg-white border border-gray-300 p-8 transition-all duration-300 hover:shadow-lg hover:scale-105">
       {/* Navigation arrows - only show if multiple accounts */}
       {cards.length > 1 && currentCard > 0 && (
         <button
