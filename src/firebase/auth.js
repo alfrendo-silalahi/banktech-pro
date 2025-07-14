@@ -7,6 +7,7 @@ import {
 } from "firebase/auth";
 import { ref, get, set } from "firebase/database";
 import { auth, database } from "./config";
+import { addTransferTransactions } from "./transactions";
 
 // Sign in user with email and password
 export const signInUser = async (email, password) => {
@@ -132,89 +133,98 @@ export const onAuthChange = (callback) => {
   return onAuthStateChanged(auth, callback);
 };
 
-// Transfer money
+// Transfer money with transaction records
 export const transferMoney = async (
   fromAccountNumber,
   targetAccountNumber,
   amount
 ) => {
-  ("tranfer money mulai");
   const usersRef = ref(database, "users");
   const snap = await get(usersRef);
 
   if (!snap.exists()) {
-    set({ isLoading: false, errors: { recipientAccount: "No users found" } });
     return { success: false, error: "No users found" };
   }
-
-  "transfer money 1", fromAccountNumber, targetAccountNumber;
 
   const users = snap.val();
   let fromPath = null;
   let targetPath = null;
+  let fromUserId = null;
+  let targetUserId = null;
   let fromAccountMeta = null;
   let targetAccountMeta = null;
 
-  // Cari path absolut dari dua rekening
+  // Find account paths and user IDs
   Object.entries(users).forEach(([uid, user]) => {
-    "test 1", uid, user;
-    user.bankAccounts?.forEach((acc, idx) => {
-      "test", acc, idx;
-      if (acc.accountNumber === fromAccountNumber) {
-        fromPath = `users/${uid}/bankAccounts/${idx}/balance`;
-        fromAccountMeta = { name: user.name, accountType: acc.accountType };
-      }
-      if (acc.accountNumber === targetAccountNumber) {
-        targetPath = `users/${uid}/bankAccounts/${idx}/balance`;
-        targetAccountMeta = { name: user.name, accountType: acc.accountType };
-      }
-    });
+    if (user.bankAccounts && Array.isArray(user.bankAccounts)) {
+      user.bankAccounts.forEach((acc, idx) => {
+        if (acc.accountNumber === fromAccountNumber) {
+          fromPath = `users/${uid}/bankAccounts/${idx}/balance`;
+          fromUserId = uid;
+          fromAccountMeta = { name: user.name, accountType: acc.accountType };
+        }
+        if (acc.accountNumber === targetAccountNumber) {
+          targetPath = `users/${uid}/bankAccounts/${idx}/balance`;
+          targetUserId = uid;
+          targetAccountMeta = { name: user.name, accountType: acc.accountType };
+        }
+      });
+    }
   });
 
-  ("transfer money 2");
-  fromPath, targetPath;
+  console.log('🔍 Found users:', { fromUserId, targetUserId, fromPath, targetPath });
 
   if (!fromPath || !targetPath) {
-    set({
-      isLoading: false,
-      errors: { recipientAccount: "Account number not found" },
-    });
     return { success: false, error: "Account not found" };
   }
 
-  ("transfer money 3");
-
-  // Jalankan dua transaksi berantai untuk menjaga konsistensi
   try {
+    // Get current balances
     const fromSnap = await get(ref(database, fromPath));
     const fromBalance = fromSnap.val();
 
     const targetSnap = await get(ref(database, targetPath));
     const targetBalance = targetSnap.val();
 
+    // Update balances
     await set(ref(database, fromPath), fromBalance - amount);
     await set(ref(database, targetPath), targetBalance + amount);
 
-    // Update state lokal UI
-    // set((state) => ({
-    //   transferData: {
-    //     ...state.transferData,
-    //     recipientName: targetAccountMeta.name,
-    //   },
-    //   isLoading: false,
-    // }));
+    // Add transaction records
+    console.log('💾 Adding transaction records...', {
+      fromUserId,
+      fromAccountNumber,
+      targetUserId,
+      targetAccountNumber,
+      amount
+    });
+    
+    const transactionResult = await addTransferTransactions(
+      fromUserId,
+      fromAccountNumber,
+      targetUserId,
+      targetAccountNumber,
+      amount,
+      fromAccountMeta.name,
+      targetAccountMeta.name
+    );
 
-    ("LOLOS LAGI 2");
+    if (!transactionResult.success) {
+      console.warn('⚠️ Transfer completed but transaction records failed:', transactionResult.error);
+    } else {
+      console.log('✅ Transaction records added successfully');
+    }
+
+    console.log('✅ Transfer completed with transaction records');
+    
     return {
       success: true,
       name: targetAccountMeta.name,
       accountType: targetAccountMeta.accountType,
+      transactionId: transactionResult.timestamp || Date.now()
     };
   } catch (err) {
-    // Jika transaksi pertama berhasil tapi kedua gagal, Anda bisa menambahkan
-    // mekanisme kompensasi (reverse transfer) di sini.
-    console.error(err);
-    set({ isLoading: false, errors: { generic: "Transfer failed" } });
+    console.error('Transfer failed:', err);
     return { success: false, error: "Transfer failed" };
   }
 };

@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import { useIndexedDB } from '../hooks/useIndexedDB';
 import { useAuth } from '../context/AuthProvider';
+import { addTransactionRecord } from '../firebase/transactions';
 
 export default function IndexedDBDebug() {
   const { user } = useAuth();
@@ -42,6 +43,33 @@ export default function IndexedDBDebug() {
     }
   };
 
+  const testFirebaseTransaction = async () => {
+    if (!user) {
+      setDebugInfo('❌ User not logged in');
+      return;
+    }
+
+    try {
+      const testTransaction = {
+        nama: 'Test Transaction',
+        nominal: 50000,
+        tipeTransaksi: 'Income',
+        tanggal: new Date().toISOString(),
+        type: 'test'
+      };
+
+      const result = await addTransactionRecord(user.uid, '8219837001', testTransaction);
+      
+      if (result.success) {
+        setDebugInfo(prev => prev + `\n✅ Firebase transaction added: ${result.id}`);
+      } else {
+        setDebugInfo(prev => prev + `\n❌ Firebase transaction failed: ${result.error}`);
+      }
+    } catch (error) {
+      setDebugInfo(prev => prev + `\n❌ Error: ${error.message}`);
+    }
+  };
+
   const checkDatabase = async () => {
     try {
       const db = await new Promise((resolve, reject) => {
@@ -72,7 +100,13 @@ export default function IndexedDBDebug() {
           onClick={testIndexedDB}
           className="px-3 py-1 bg-green-500 text-white rounded text-sm ml-2"
         >
-          Test Functions
+          Test IndexedDB
+        </button>
+        <button
+          onClick={testFirebaseTransaction}
+          className="px-3 py-1 bg-purple-500 text-white rounded text-sm ml-2"
+        >
+          Test Firebase TX
         </button>
         <button
           onClick={() => setDebugInfo('')}

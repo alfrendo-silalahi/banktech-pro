@@ -257,6 +257,7 @@ const useTransferStore = create(
                 toAccount: transferData.recipientAccount,
                 amount: transferData.amount,
                 description: transferData.description,
+                recipientName: transferData.recipientName,
                 timestamp: Date.now(),
                 status: 'pending'
               });
