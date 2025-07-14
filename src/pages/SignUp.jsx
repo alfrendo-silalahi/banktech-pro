@@ -1,11 +1,13 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router";
 import { useAuth } from "../context/AuthProvider";
+import { useActivity } from "../context/ActivityProvider";
+import { registerUser } from "../firebase/auth";
 
 export default function SignUp() {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -13,7 +15,8 @@ export default function SignUp() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const { register } = useAuth();
+  const { login } = useAuth();
+  const { logActivity } = useActivity();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -21,11 +24,11 @@ export default function SignUp() {
     setLoading(true);
     setError("");
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const usernameRegex = /^[a-zA-Z0-9_]{3,}$/;
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*#?&])[^\s]{8,}$/;
 
-    if (!emailRegex.test(email)) {
-      alert("Email tidak valid");
+    if (!usernameRegex.test(username)) {
+      alert("Username harus minimal 3 karakter dan hanya boleh huruf, angka, dan underscore");
       setLoading(false);
       return;
     }
@@ -42,12 +45,16 @@ export default function SignUp() {
       return;
     }
 
-    const success = await register(email, password, firstName, lastName);
-    if (success) {
-      alert("Registrasi berhasil!");
-      navigate("/signin");
+    logActivity('signup_attempt', 'auth', { username });
+    
+    const result = await registerUser(username, password, firstName, lastName);
+    if (result.success) {
+      logActivity('signup_success', 'auth', { username, accountNumber: result.accountNumber });
+      alert(`Registrasi berhasil! Account Number: ${result.accountNumber}`);
+      login(result.user);
     } else {
-      setError("Gagal registrasi. Coba lagi.");
+      logActivity('signup_failed', 'auth', { username, error: result.error });
+      setError(result.error || "Gagal registrasi. Coba lagi.");
     }
 
     setLoading(false);
@@ -88,12 +95,13 @@ export default function SignUp() {
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Email*</label>
+              <label className="block mb-1 font-medium">Username*</label>
               <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
                 required
+                placeholder="Username (letters, numbers, underscore only)"
                 className="w-full px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-orange-500"
               />
             </div>
