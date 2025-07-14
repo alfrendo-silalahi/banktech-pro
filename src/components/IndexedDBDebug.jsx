@@ -6,7 +6,7 @@ import { addTransactionRecord } from '../firebase/transactions';
 
 export default function IndexedDBDebug() {
   const { user } = useAuth();
-  const { isReady, saveTransactions, getTransactions, addToOfflineQueue } = useIndexedDB();
+  const { isReady, saveTransactions, getTransactions, addToOfflineQueue, clearAllData } = useIndexedDB();
   const [debugInfo, setDebugInfo] = useState('');
 
   const testIndexedDB = async () => {
@@ -107,6 +107,15 @@ export default function IndexedDBDebug() {
           className="px-3 py-1 bg-purple-500 text-white rounded text-sm ml-2"
         >
           Test Firebase TX
+        </button>
+        <button
+          onClick={() => {
+            clearAllData();
+            setDebugInfo('\n🧹 All IndexedDB data cleared');
+          }}
+          className="px-3 py-1 bg-red-500 text-white rounded text-sm ml-2"
+        >
+          Clear All Data
         </button>
         <button
           onClick={() => setDebugInfo('')}

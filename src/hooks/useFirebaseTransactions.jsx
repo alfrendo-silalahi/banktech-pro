@@ -13,7 +13,7 @@ import {
 export function useFirebaseTransactions(accountNumber = null) {
   const { user } = useAuth();
   const isOnline = useNetworkStatus();
-  const { isReady, saveTransactions, getTransactions, addToOfflineQueue } = useIndexedDB();
+  const { isReady, saveTransactions, getTransactions, addToOfflineQueue, clearTransactions } = useIndexedDB();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState({
@@ -44,10 +44,15 @@ export function useFirebaseTransactions(accountNumber = null) {
         }));
         
         setTransactions(transactionsWithAccount);
-        // Save to IndexedDB for offline use
+        // Clear and save fresh data to IndexedDB
         if (isReady) {
-          saveTransactions(user.uid, transactionsWithAccount);
-          console.log('💾 Saved to IndexedDB:', transactionsWithAccount.length, 'transactions');
+          clearTransactions(user.uid).then(() => {
+            saveTransactions(user.uid, transactionsWithAccount);
+            console.log('💾 Fresh sync to IndexedDB:', transactionsWithAccount.length, 'transactions');
+          }).catch(err => {
+            console.warn('⚠️ IndexedDB clear failed:', err);
+            saveTransactions(user.uid, transactionsWithAccount);
+          });
         }
         setLoading(false);
       }, accountNumber);
