@@ -1,4 +1,4 @@
-// src/store.js
+// Preferences Store with Zustand
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 

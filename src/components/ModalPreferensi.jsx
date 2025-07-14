@@ -1,6 +1,6 @@
 // src/ModalPreferensi.js
 import React, { useState, useEffect } from "react";
-import usePreferensiStore from "../hooks/usePreferensiStore";
+import usePreferensiStore from "../store/preferensiStore";
 
 function ModalPreferensi() {
   const { isModalOpen, itemsPerPage, filterTipe, setPreferences, toggleModal } =
@@ -51,7 +51,7 @@ function ModalPreferensi() {
 
   return (
     // Backdrop modal
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 transition-opacity">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-10 transition-opacity">
       {/* Panel Modal */}
       <div className="bg-white rounded-lg shadow-xl p-6 w-full max-w-sm">
         <h3 className="text-lg font-medium leading-6 text-gray-900 mb-4">

@@ -2,32 +2,32 @@ import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { UserOutlined, LockOutlined, LoadingOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthProvider";
+import { useActivity } from "../context/ActivityProvider";
+import { signInUser } from "../firebase/auth";
 
 export default function SignInForm() {
   const { login } = useAuth();
+  const { logActivity } = useActivity();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 
   const onFinish = async (values) => {
     try {
       setLoading(true);
+      logActivity('login_attempt', 'auth', { username: values.username });
 
-      const res = await fetch("https://dummyjson.com/auth/login", {
-        method: "POST",
-        body: JSON.stringify(values),
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!res.ok) {
-        const errBody = await res.json();
-        throw new Error(errBody.message || `HTTP ${res.status}`);
+      const result = await signInUser(values.username, values.password);
+      
+      if (result.success) {
+        logActivity('login_success', 'auth', { username: values.username });
+        login(result.user);
+        message.success("Sign in successful!");
+      } else {
+        logActivity('login_failed', 'auth', { username: values.username, error: result.error });
+        throw new Error(result.error);
       }
-
-      const resBody = await res.json();
-      login(resBody.accessToken);
     } catch (err) {
+      logActivity('login_error', 'auth', { username: values.username, error: err.message });
       form.resetFields();
       message.error(err.message || "Sign In Failed!");
     } finally {
