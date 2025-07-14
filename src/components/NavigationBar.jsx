@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthProvider";
-import { Link } from "react-router-dom";
+import { Link } from "react-router";
 import TransferWizard from "../components/TransferWizard";
 
 
