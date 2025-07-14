@@ -15,7 +15,7 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/seeder" element={<SeederPage />} />
+            {/* <Route path="/seeder" element={<SeederPage />} /> */}
             <Route path="/" element={<SignIn />} />
           </Routes>
         </ActivityProvider>

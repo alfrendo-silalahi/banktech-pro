@@ -10,6 +10,7 @@ export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // Ambil token dari localStorage saat pertama load
   useEffect(() => {
     const unsubscribe = onAuthChange((firebaseUser) => {
       setUser(firebaseUser);
