@@ -1,24 +1,22 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import BalanceCard from "../components/BalanceCard";
 import TransactionTable from "../components/TransactionTable";
-import ActivityLog from "../components/ActivityLog.jsx";
+// import ActivityLog from "../components/ActivityLog.jsx";
 import TransactionCategorization from "../components/TransactionCategorization";
-import TransferWizard from "../components/TransferWizard";
 import BaseLayout from "../layout/BaseLayout";
-import TestSummary from "./SummaryTransaction";
 import { useActivity } from "../context/ActivityProvider";
-import { useFirebaseTransactions } from "../hooks/useFirebaseTransactions";
+// import { useFirebaseTransactions } from "../hooks/useFirebaseTransactions";
 import { AccountProvider } from "../context/AccountProvider.jsx";
 import SummaryChart from "../components/SummaryChart.jsx";
-import Navbar from '../components/NavigationBar.jsx'
-
+import Navbar from "../components/NavigationBar.jsx";
+import SummaryTransaction from "./SummaryTransaction";
 
 export default function Dashboard() {
   const { logActivity } = useActivity();
   // const [showTransferWizard, setShowTransferWizard] = useState(false);
 
   useEffect(() => {
-    logActivity('dashboard_visit', 'navigation', { page: 'dashboard' });
+    logActivity("dashboard_visit", "navigation", { page: "dashboard" });
   }, [logActivity]);
 
   return (
@@ -33,12 +31,12 @@ export default function Dashboard() {
               <SummaryChart data={[]}/>
             </div> */}
             <div className="md:col-span-3 h-full">
-              <TestSummary />
+              <SummaryTransaction />
             </div>
 
             {/* BalanceCard */}
             <div className="md:col-span-4 h-full">
-                <BalanceCard />
+              <BalanceCard />
             </div>
 
             {/* Chart */}
@@ -56,13 +54,8 @@ export default function Dashboard() {
           <div className="mt-10 ml-10 mr-10">
             <TransactionCategorization />
           </div>
-          <div className="mt-10 ml-10 mr-10">
-          </div>
-          <TestSummary />
-          
-          {/* {showTransferWizard && (
-            <TransferWizard onClose={() => setShowTransferWizard(false)} />
-          )} */}
+          <div className="mt-10 ml-10 mr-10"></div>
+          {/* <TestSummary /> */}
         </div>
       </AccountProvider>
     </BaseLayout>

@@ -5,7 +5,7 @@ import {
   signOut,
   onAuthStateChanged,
 } from "firebase/auth";
-import { ref, get, set, runTransaction } from "firebase/database";
+import { ref, get, set } from "firebase/database";
 import { auth, database } from "./config";
 
 // Sign in user with email and password

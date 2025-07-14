@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser.jsx";
 import { useAccount } from "../context/AccountProvider.jsx";
-import useTransferStore from "../store/transferStore.jsx";
+// import useTransferStore from "../store/transferStore.jsx";
 
 export default function BalanceCard() {
   const [currentCard, setCurrentCard] = useState(0);

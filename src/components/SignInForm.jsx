@@ -1,19 +1,13 @@
 import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
-import {
-  UserOutlined,
-  LockOutlined,
-  LoadingOutlined,
-  MailOutlined,
-} from "@ant-design/icons";
+import { LockOutlined, LoadingOutlined, MailOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthProvider";
-import { useActivity } from "../context/ActivityProvider";
+// import { useActivity } from "../context/ActivityProvider";
 import { signInUser } from "../firebase/auth";
-import useTransferStore from "../store/transferStore";
 
 export default function SignInForm() {
   const { login } = useAuth();
-  const { logActivity } = useActivity();
+  // const { logActivity } = useActivity();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
 

@@ -1,8 +1,22 @@
-// src/RingkasanKeuangan.js
-import React, { useMemo } from "react";
+import { useMemo } from "react";
 import SummaryTransactionCard from "../components/SummaryTransactionCard";
+import { useAccount } from "../context/AccountProvider";
+import { useAuth } from "../context/AuthProvider";
+import useTransactions from "../hooks/useTransactions";
 
-function SummaryTransaction({ data = [] }) {
+function SummaryTransaction() {
+  // get uid & selected account
+  const { user } = useAuth();
+  const { activeAccount } = useAccount();
+
+  const {
+    transactions: data,
+    loading,
+    error,
+  } = useTransactions(user.uid, activeAccount?.accountNumber);
+
+  console.log({ data });
+
   // Gunakan useMemo untuk kalkulasi total. Logika ini dipindahkan dari file tabel.
   const ringkasanData = useMemo(() => {
     if (!data || !Array.isArray(data))
@@ -26,7 +40,8 @@ function SummaryTransaction({ data = [] }) {
     // Lakukan iterasi pada 'data' yang diterima dari props
     data.forEach((item) => {
       // Convert string tanggal ke Date object jika diperlukan
-      const itemDate = item.tanggal instanceof Date ? item.tanggal : new Date(item.tanggal);
+      const itemDate =
+        item.tanggal instanceof Date ? item.tanggal : new Date(item.tanggal);
       const itemMonth = itemDate.getMonth();
       const itemYear = itemDate.getFullYear();
 
