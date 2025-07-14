@@ -3,16 +3,19 @@ import BalanceCard from "../components/BalanceCard";
 import TransactionTable from "../components/TransactionTable";
 // import ActivityLog from "../components/ActivityLog.jsx";
 import TransactionCategorization from "../components/TransactionCategorization";
+import IndexedDBDebug from "../components/IndexedDBDebug";
 import BaseLayout from "../layout/BaseLayout";
 import { useActivity } from "../context/ActivityProvider";
 // import { useFirebaseTransactions } from "../hooks/useFirebaseTransactions";
 import { AccountProvider } from "../context/AccountProvider.jsx";
+import { useSyncService } from "../hooks/useSyncService";
 import SummaryChart from "../components/SummaryChart.jsx";
 import Navbar from "../components/NavigationBar.jsx";
 import SummaryTransaction from "./SummaryTransaction";
 
 export default function Dashboard() {
   const { logActivity } = useActivity();
+  useSyncService(); // Initialize sync service
   // const [showTransferWizard, setShowTransferWizard] = useState(false);
 
   useEffect(() => {
@@ -57,6 +60,7 @@ export default function Dashboard() {
           <div className="mt-10 ml-10 mr-10"></div>
           {/* <TestSummary /> */}
         </div>
+        <IndexedDBDebug />
       </AccountProvider>
     </BaseLayout>
   );

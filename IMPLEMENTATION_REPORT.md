@@ -280,6 +280,9 @@ src/
 | **Level 3** | 8/8 (100%) | Firebase integration | ✅ Complete |
 | **Level 4** | 7/7 (100%) | Performance optimization | ✅ Complete |
 | **Level 5** | 7/7 (100%) | Advanced categorization | ✅ Complete |
+| **Level 6** | 8/8 (100%) | Transfer wizard with Zustand | ✅ Complete |
+| **Level 7** | 8/8 (100%) | Analytics charts with real-time updates | ✅ Complete |
+| **Level 8** | 8/8 (100%) | Multi-account switching with Context API | ✅ Complete |
 
 **Overall Compliance: 100% + Enhanced Features**
 
@@ -303,6 +306,214 @@ src/
 - **Efficient filtering** algorithms for large transaction sets
 - **Compact currency formatting** for better space utilization
 - **Activity logging** for all categorization actions
+
+---
+
+## 💸 Level 6: Transfer Wizard with Zustand
+
+### Requirements
+- Multi-step transfer wizard
+- Redux/Zustand global state management
+- Complex workflows with step transitions
+- Progress indicators
+- Form validation
+- Scalable state logic
+
+### Implementation
+
+| Feature | Status | Files |
+|---------|--------|---------|
+| **Zustand Store** | ✅ Complete | `src/store/transferStore.jsx:12-15` (create with persist) |
+| **Multi-step Wizard** | ✅ Complete | `src/components/TransferWizard.jsx:9-85` (4 steps: Recipient, Amount, Confirmation, Success) |
+| **Step Transitions** | ✅ Complete | `src/store/transferStore.jsx:44-82` (nextStep/prevStep with animations) |
+| **Progress Indicator** | ✅ Complete | `src/components/TransferWizard.jsx:220-250` (visual progress with animations) |
+| **Form Validation** | ✅ Complete | `src/store/transferStore.jsx:175-200` (step-by-step validation) |
+| **Complex State Logic** | ✅ Complete | `src/store/transferStore.jsx:125-174` (account lookup, error handling) |
+| **Global State Management** | ✅ Complete | `src/store/transferStore.jsx:16-40` (centralized transfer state) |
+| **Smooth Animations** | ✅ Complete | `src/components/TransferWizard.jsx:225-235` (step transitions with CSS) |
+
+### Advanced Features
+
+| Feature | Implementation | Files |
+|---------|----------------|-------|
+| **Account Lookup** | Real-time recipient validation | `src/store/transferStore.jsx:125-174` |
+| **Transfer Limits** | Min Rp 10K, Max Rp 100M validation | `src/store/transferStore.jsx:185-195` |
+| **Category Integration** | Optional transaction categorization | `src/components/TransferWizard.jsx:115-140` |
+| **Activity Logging** | Complete transfer workflow tracking | `src/components/TransferWizard.jsx:295-315` |
+| **Persistent State** | Zustand persist middleware | `src/store/transferStore.jsx:225-235` |
+| **Error Handling** | Comprehensive validation & feedback | `src/store/transferStore.jsx:90-95` |
+| **Loading States** | Visual feedback for async operations | `src/components/TransferWizard.jsx:340-350` |
+
+### Zustand Store Architecture
+
+**State Structure:**
+```javascript
+{
+  currentStep: 'recipient' | 'amount' | 'confirmation' | 'success',
+  transferData: { recipientAccount, recipientName, amount, description },
+  isLoading: boolean,
+  errors: { [field]: string },
+  steps: [{ id, title, completed }]
+}
+```
+
+**Actions:**
+- `nextStep()` - Advance with validation
+- `prevStep()` - Go back with state cleanup
+- `updateTransferData()` - Update form data
+- `lookupAccount()` - Validate recipient
+- `executeTransfer()` - Process transaction
+- `resetTransfer()` - Reset wizard state
+
+### Key Files
+- `src/store/transferStore.jsx` - Zustand store with complex state logic
+- `src/components/TransferWizard.jsx` - Multi-step wizard UI component
+- `src/firebase/auth.js:50-75` - Transfer execution logic
+- `src/pages/Dashboard.jsx` - Transfer wizard integration
+
+---
+
+## 📈 Level 7: Analytics Charts with Real-time Updates
+
+### Requirements
+- Chart.js integration for data visualization
+- useEffect patterns for real-time updates
+- Beautiful animated charts
+- Interactive spending breakdowns
+- Category-based analytics
+- Smooth animations
+- Financial data visualization
+
+### Implementation
+
+| Feature | Status | Files |
+|---------|--------|---------|
+| **Chart.js Integration** | ✅ Complete | `src/components/SummaryChart.jsx:7-27` (Chart.js setup & registration) |
+| **Real-time Updates** | ✅ Complete | `src/components/SummaryChart.jsx:32-35` (useFirebaseTransactions hook) |
+| **useEffect Patterns** | ✅ Complete | `src/hooks/useFirebaseTransactions.jsx:18-32` (real-time listeners) |
+| **Animated Charts** | ✅ Complete | `src/components/SummaryChart.jsx:68-76` (smooth line charts with tension) |
+| **Spending Analytics** | ✅ Complete | `src/pages/SummaryTransaction.jsx:20-58` (monthly comparisons) |
+| **Category Breakdowns** | ✅ Complete | `src/components/TransactionCategorization.jsx:180-220` (visual summaries) |
+| **Interactive Visualization** | ✅ Complete | `src/components/SummaryChart.jsx:78-95` (responsive charts with tooltips) |
+| **Financial Data Processing** | ✅ Complete | `src/components/SummaryChart.jsx:36-60` (5-month trend analysis) |
+
+### Advanced Analytics Features
+
+| Feature | Implementation | Files |
+|---------|----------------|-------|
+| **Multi-Month Trends** | 5-month income/expense tracking | `src/components/SummaryChart.jsx:36-60` |
+| **Real-time Balance** | Live balance updates from transactions | `src/components/BalanceCard.jsx` (with real-time listener) |
+| **Monthly Comparisons** | Current vs previous month analysis | `src/pages/SummaryTransaction.jsx:29-55` |
+| **Category Analytics** | Spending breakdown by categories | `src/hooks/useCategories.js:85-100` |
+| **Visual Progress Bars** | Category spending percentages | `src/components/TransactionCategorization.jsx:200-220` |
+| **Currency Formatting** | Localized IDR formatting | `src/components/SummaryChart.jsx:86-92` |
+| **Responsive Design** | Charts adapt to screen sizes | `src/components/SummaryChart.jsx:78` |
+
+### Chart.js Configuration
+
+**Chart Types:**
+- **Line Charts**: Income/expense trends over time
+- **Progress Bars**: Category spending breakdowns
+- **Summary Cards**: Monthly comparisons with trend indicators
+
+**Animations:**
+- **Smooth Transitions**: `tension: 0.4` for curved lines
+- **Fill Areas**: Gradient backgrounds for better visualization
+- **Responsive Updates**: Charts re-render on data changes
+
+**Real-time Data Flow:**
+```
+Firebase → useFirebaseTransactions → useMemo → Chart.js → Animated Visualization
+```
+
+### Key Files
+- `src/components/SummaryChart.jsx` - Main analytics chart with Chart.js
+- `src/pages/SummaryTransaction.jsx` - Monthly summary analytics
+- `src/hooks/useFirebaseTransactions.jsx` - Real-time data hooks
+- `src/components/TransactionCategorization.jsx` - Category analytics
+- `src/components/SummaryTransactionCard.jsx` - Trend indicators
+
+---
+
+## 🏢 Level 8: Multi-Account Switching
+
+### Requirements
+- Multiple bank account management
+- Seamless account switching
+- Context API for state management
+- Component communication
+- Synchronized state across components
+- Account-specific data filtering
+- Smooth switching animations
+
+### Implementation
+
+| Feature | Status | Files |
+|---------|--------|---------|
+| **Context API** | ✅ Complete | `src/context/AccountProvider.jsx:5-7` (createContext setup) |
+| **Multi-Account Management** | ✅ Complete | `src/context/AccountProvider.jsx:12-25` (account detection & default selection) |
+| **Seamless Switching** | ✅ Complete | `src/context/AccountProvider.jsx:35-40` (switchAccount function) |
+| **State Synchronization** | ✅ Complete | `src/context/AccountProvider.jsx:27-33` (useEffect sync) |
+| **Component Communication** | ✅ Complete | `src/context/AccountProvider.jsx:49-57` (context provider) |
+| **Account-specific Filtering** | ✅ Complete | `src/hooks/useFirebaseTransactions.jsx:18-32` (account-based data) |
+| **Smooth Animations** | ✅ Complete | `src/components/BalanceCard.jsx:47-85` (card transitions) |
+| **Navigation Controls** | ✅ Complete | `src/components/BalanceCard.jsx:38-46` (prev/next buttons) |
+
+### Advanced Multi-Account Features
+
+| Feature | Implementation | Files |
+|---------|----------------|-------|
+| **Default Account Detection** | Auto-select default or first account | `src/context/AccountProvider.jsx:15-22` |
+| **Account Type Support** | Savings, Checking, Credit accounts | `src/components/BalanceCard.jsx:26` |
+| **Real-time Balance Sync** | Balance updates across all accounts | `src/hooks/useCurrentUser.jsx` (real-time listener) |
+| **Account-specific Transactions** | Filter transactions by active account | `src/hooks/useFirebaseTransactions.jsx:20-25` |
+| **Account-specific Analytics** | Charts update based on selected account | `src/components/SummaryChart.jsx:32-35` |
+| **Transfer Integration** | Account switching in transfer wizard | `src/components/TransferWizard.jsx:290-295` |
+| **Visual Account Indicators** | Default account badges and styling | `src/components/BalanceCard.jsx:70-75` |
+
+### State Management Architecture
+
+**Context Structure:**
+```javascript
+{
+  activeAccount: { accountNumber, balance, accountType, isDefault },
+  activeAccountIndex: number,
+  allAccounts: Account[],
+  switchAccount: (index) => void,
+  getAccountByNumber: (accountNumber) => Account
+}
+```
+
+**Component Synchronization:**
+- **BalanceCard** → Visual account switching with animations
+- **SummaryChart** → Account-specific analytics
+- **TransactionTable** → Account-filtered transactions
+- **TransferWizard** → Source account selection
+- **SummaryTransaction** → Account-specific summaries
+
+**Data Flow:**
+```
+AccountProvider → useAccount hook → Components → Account-specific Data
+```
+
+### Animation & UX Features
+
+**Smooth Transitions:**
+- **Card switching**: `transition-all duration-500 ease-in-out`
+- **Button animations**: `hover:scale-110` with duration-200
+- **Content transitions**: Synchronized state updates
+
+**Navigation Controls:**
+- **Chevron buttons** for account navigation
+- **Conditional rendering** based on account position
+- **Visual feedback** with hover effects
+
+### Key Files
+- `src/context/AccountProvider.jsx` - Core multi-account state management
+- `src/components/BalanceCard.jsx` - Visual account switching interface
+- `src/hooks/useFirebaseTransactions.jsx` - Account-specific data filtering
+- `src/components/SummaryChart.jsx` - Account-based analytics
+- `src/pages/Dashboard.jsx` - AccountProvider integrationn actions
 
 ---
 

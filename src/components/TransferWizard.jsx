@@ -246,6 +246,8 @@ const ConfirmationStep = () => {
 
 const SuccessStep = () => {
   const { resetTransfer } = useTransferStore();
+  const [transferResult, setTransferResult] = useState(null);
+  const isOnline = navigator.onLine;
 
   return (
     <div className="text-center space-y-4">
@@ -253,11 +255,26 @@ const SuccessStep = () => {
         <span className="text-2xl">✅</span>
       </div>
       <h3 className="text-lg font-semibold text-gray-800">
-        Transfer Successful!
+        Transfer {isOnline ? 'Completed' : 'Queued'}!
       </h3>
-      <p className="text-gray-600">
-        Your money transfer has been processed successfully.
-      </p>
+      
+      {isOnline ? (
+        <p className="text-gray-600">
+          Your money transfer has been processed successfully.
+        </p>
+      ) : (
+        <div className="space-y-2">
+          <p className="text-orange-600">
+            You're offline. Transfer has been saved and will be processed when you're back online.
+          </p>
+          <div className="p-3 bg-orange-50 border border-orange-200 rounded-md">
+            <p className="text-orange-800 text-sm">
+              📱 Transfer saved to offline queue. It will sync automatically when internet connection is restored.
+            </p>
+          </div>
+        </div>
+      )}
+      
       <button
         onClick={resetTransfer}
         className="px-6 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"

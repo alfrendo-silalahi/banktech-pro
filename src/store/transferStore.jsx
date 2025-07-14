@@ -223,35 +223,62 @@ const useTransferStore = create(
         return Object.keys(errors).length === 0;
       },
 
-      // Transfer execution
+      // Transfer execution with offline support
       executeTransfer: async (fromAccountNumber) => {
-        ("transfer uang dimulai");
-        const { currentUserAccount, transferData } = get();
-        "transfer data", { transferData };
-        ({ currentUserAccount });
-        ("transfer uang dimulai 2");
+        const { transferData } = get();
         set({ isLoading: true, errors: {} });
-        ("transfer uang dimulai 3");
+        
+        // Check if online
+        const isOnline = navigator.onLine;
+        
         try {
-          // await new Promise(resolve => setTimeout(resolve, 2000));
-          "transfer data",
-            fromAccountNumber,
-            transferData.recipientAccount,
-            transferData.amount;
+          if (isOnline) {
+            // Online: Execute transfer normally
+            await transferMoney(
+              fromAccountNumber,
+              transferData.recipientAccount,
+              transferData.amount
+            );
+          } else {
+            // Offline: Save to IndexedDB queue
+            const db = await new Promise((resolve, reject) => {
+              const request = indexedDB.open('BankTechProDB', 1);
+              request.onsuccess = () => resolve(request.result);
+              request.onerror = () => reject(request.error);
+            });
+            
+            const tx = db.transaction(['offlineQueue'], 'readwrite');
+            const store = tx.objectStore('offlineQueue');
+            
+            await new Promise((resolve, reject) => {
+              const request = store.add({
+                type: 'transfer',
+                fromAccount: fromAccountNumber,
+                toAccount: transferData.recipientAccount,
+                amount: transferData.amount,
+                description: transferData.description,
+                timestamp: Date.now(),
+                status: 'pending'
+              });
+              request.onsuccess = () => resolve();
+              request.onerror = () => reject(request.error);
+            });
+            
+            db.close();
+            console.log('💾 Transfer saved to offline queue');
+          }
 
-          await transferMoney(
-            fromAccountNumber,
-            transferData.recipientAccount,
-            transferData.amount
-          );
-
-          ("transfer uang dimulai 4");
           set({
             currentStep: TRANSFER_STEPS.SUCCESS,
             isLoading: false,
             steps: get().steps.map((step) => ({ ...step, completed: true })),
           });
-          return { success: true, transactionId: `TXN${Date.now()}` };
+          
+          return { 
+            success: true, 
+            transactionId: `TXN${Date.now()}`,
+            offline: !isOnline
+          };
         } catch (error) {
           set({
             isLoading: false,
