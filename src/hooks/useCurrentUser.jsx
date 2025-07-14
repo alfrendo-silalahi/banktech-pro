@@ -1,7 +1,7 @@
 // Hook to get current user account information
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
-import { ref, get } from 'firebase/database';
+import { ref, onValue } from 'firebase/database';
 import { database } from '../firebase/config';
 
 export function useCurrentUser() {
@@ -10,28 +10,26 @@ export function useCurrentUser() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      if (!user) {
+    if (!user) {
+      setCurrentUserData(null);
+      setLoading(false);
+      return;
+    }
+
+    const userRef = ref(database, `users/${user.uid}`);
+    const unsubscribe = onValue(userRef, (snapshot) => {
+      if (snapshot.exists()) {
+        setCurrentUserData(snapshot.val());
+      } else {
         setCurrentUserData(null);
-        setLoading(false);
-        return;
       }
+      setLoading(false);
+    }, (error) => {
+      console.error('Error listening to user data:', error);
+      setLoading(false);
+    });
 
-      try {
-        const userRef = ref(database, `users/${user.uid}`);
-        const snapshot = await get(userRef);
-        
-        if (snapshot.exists()) {
-          setCurrentUserData(snapshot.val());
-        }
-      } catch (error) {
-        console.error('Error fetching user data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserData();
+    return () => unsubscribe();
   }, [user]);
 
   return {
