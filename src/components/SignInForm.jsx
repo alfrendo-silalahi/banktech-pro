@@ -2,44 +2,24 @@ import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import { LockOutlined, LoadingOutlined, MailOutlined } from "@ant-design/icons";
 import { useAuth } from "../context/AuthProvider";
-// import { useActivity } from "../context/ActivityProvider";
 import { signInUser } from "../firebase/auth";
 
 export default function SignInForm() {
   const { login } = useAuth();
-  // const { logActivity } = useActivity();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
-
-  // const { setCurrentUserAccount } = useTransferStore();
 
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      // logActivity("login_attempt", "auth", { username: values.username });
-
-      // Sign in with Firebase
       const result = await signInUser(values.email, values.password);
-
       if (result.success) {
-        // logActivity("login_success", "auth", { username: values.username });
-        "login user", result.user;
         login(result.user);
-        // setCurrentUserAccount("123");
-
         message.success("Sign in successful!");
       } else {
-        // logActivity("login_failed", "auth", {
-        //   username: values.username,
-        //   error: result.error,
-        // });
         throw new Error(result.error);
       }
     } catch (err) {
-      // logActivity("login_error", "auth", {
-      //   username: values.username,
-      //   error: err.message,
-      // });
       form.resetFields();
       message.error(err.message || "Sign In Failed!");
     } finally {
