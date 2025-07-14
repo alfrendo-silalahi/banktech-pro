@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router";
 import { AuthProvider } from "./context/AuthProvider";
 import { ActivityProvider } from "./context/ActivityProvider";
+import NetworkStatus from "./components/NetworkStatus";
 import Dashboard from "./pages/Dashboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
@@ -12,6 +13,7 @@ function App() {
     <BrowserRouter>
       <AuthProvider>
         <ActivityProvider>
+          <NetworkStatus />
           <Routes>
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />

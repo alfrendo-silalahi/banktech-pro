@@ -1,6 +1,8 @@
-// Custom hook for Firebase transactions
+// Custom hook for Firebase transactions with offline support
 import { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthProvider';
+import { useNetworkStatus } from './useNetworkStatus';
+import { useIndexedDB } from './useIndexedDB';
 import { 
   addTransaction, 
   listenToTransactions,
@@ -10,6 +12,8 @@ import {
 
 export function useFirebaseTransactions(accountNumber = null) {
   const { user } = useAuth();
+  const isOnline = useNetworkStatus();
+  const { isReady, saveTransactions, getTransactions, addToOfflineQueue } = useIndexedDB();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [preferences, setPreferences] = useState({
@@ -17,7 +21,7 @@ export function useFirebaseTransactions(accountNumber = null) {
     filterTipe: 'All'
   });
 
-  // Listen to real-time transactions for specific account
+  // Listen to real-time transactions with offline fallback
   useEffect(() => {
     if (!user || !accountNumber) {
       setTransactions([]);
@@ -26,17 +30,40 @@ export function useFirebaseTransactions(accountNumber = null) {
     }
 
     setLoading(true);
-    const unsubscribe = listenToTransactions(user.uid, (newTransactions) => {
-      // Filter transactions for specific account
-      const accountTransactions = newTransactions.filter(t => 
-        t.ownerAccount === accountNumber || t.nomorRekening === accountNumber
-      );
-      setTransactions(accountTransactions);
-      setLoading(false);
-    }, accountNumber);
+    
+    if (isOnline) {
+      const unsubscribe = listenToTransactions(user.uid, (newTransactions) => {
+        const accountTransactions = newTransactions.filter(t => 
+          t.ownerAccount === accountNumber || t.nomorRekening === accountNumber
+        );
+        
+        // Add accountNumber field for consistent IndexedDB storage
+        const transactionsWithAccount = accountTransactions.map(t => ({
+          ...t,
+          accountNumber: t.ownerAccount || t.nomorRekening || accountNumber
+        }));
+        
+        setTransactions(transactionsWithAccount);
+        // Save to IndexedDB for offline use
+        if (isReady) {
+          saveTransactions(user.uid, transactionsWithAccount);
+          console.log('💾 Saved to IndexedDB:', transactionsWithAccount.length, 'transactions');
+        }
+        setLoading(false);
+      }, accountNumber);
 
-    return () => unsubscribe();
-  }, [user, accountNumber]);
+      return () => unsubscribe();
+    } else {
+      // Load from IndexedDB when offline
+      if (isReady) {
+        getTransactions(user.uid, accountNumber).then(offlineTransactions => {
+          setTransactions(offlineTransactions);
+          setLoading(false);
+          console.log('📱 Loaded from IndexedDB (offline):', offlineTransactions.length, 'transactions');
+        });
+      }
+    }
+  }, [user, accountNumber, isOnline, isReady]);
 
   // Load user preferences
   useEffect(() => {
@@ -52,12 +79,36 @@ export function useFirebaseTransactions(accountNumber = null) {
     loadPreferences();
   }, [user]);
 
-  // Add new transaction
+  // Add new transaction with offline support
   const createTransaction = async (transactionData) => {
     if (!user) return { success: false, error: 'User not authenticated' };
 
-    const result = await addTransaction(user.uid, transactionData);
-    return result;
+    if (isOnline) {
+      const result = await addTransaction(user.uid, transactionData);
+      return result;
+    } else {
+      // Add to offline queue
+      if (isReady) {
+        await addToOfflineQueue({
+          type: 'addTransaction',
+          userId: user.uid,
+          data: transactionData
+        });
+        
+        // Optimistic update
+        const optimisticTransaction = {
+          ...transactionData,
+          id: `temp_${Date.now()}`,
+          timestamp: Date.now(),
+          status: 'pending'
+        };
+        setTransactions(prev => [optimisticTransaction, ...prev]);
+        console.log('⚡ Optimistic update (offline):', optimisticTransaction);
+        
+        return { success: true, offline: true };
+      }
+      return { success: false, error: 'Offline storage not ready' };
+    }
   };
 
   // Update preferences
