@@ -25,8 +25,10 @@ function SummaryTransaction({ data = [] }) {
 
     // Lakukan iterasi pada 'data' yang diterima dari props
     data.forEach((item) => {
-      const itemMonth = item.tanggal.getMonth();
-      const itemYear = item.tanggal.getFullYear();
+      // Convert string tanggal ke Date object jika diperlukan
+      const itemDate = item.tanggal instanceof Date ? item.tanggal : new Date(item.tanggal);
+      const itemMonth = itemDate.getMonth();
+      const itemYear = itemDate.getFullYear();
 
       if (itemMonth === currentMonth && itemYear === currentYear) {
         if (item.tipeTransaksi === "Income")

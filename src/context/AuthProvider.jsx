@@ -1,38 +1,89 @@
 import { useState, useEffect, createContext, useContext } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate, useLocation } from "react-router";
+import { onAuthChange } from "../firebase/auth";
 
-const TOKEN_KEY = "banktech-pro__token";
 const AuthContext = createContext();
 
 export function AuthProvider({ children }) {
   const navigate = useNavigate();
-  const [token, setToken] = useState(null);
+  const location = useLocation();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const savedToken = localStorage.getItem(TOKEN_KEY);
-    if (savedToken) setToken(savedToken);
-  }, []);
+    const unsubscribe = onAuthChange((firebaseUser) => {
+      setUser(firebaseUser);
+      setLoading(false);
+      
+      // Auto redirect based on auth state
+      if (firebaseUser) {
+        // User is logged in
+        if (location.pathname === '/signin' || location.pathname === '/') {
+          navigate('/dashboard');
+        }
+      } else {
+        // User is not logged in
+        const allowedPaths = ['/signin', '/signup', '/seeder'];
+        if (!allowedPaths.includes(location.pathname)) {
+          navigate('/signin');
+        }
+      }
+    });
 
-  const login = (token) => {
-    localStorage.setItem(TOKEN_KEY, token);
-    setToken(token);
+    return () => unsubscribe();
+  }, [navigate, location.pathname]);
+
+  const login = (firebaseUser) => {
+    setUser(firebaseUser);
     navigate("/dashboard");
   };
 
-  const logout = () => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
+  const logout = async () => {
+    try {
+      setLoading(true);
+      
+      // Clear user state immediately
+      setUser(null);
+      
+      // Sign out from Firebase
+      const { signOutUser } = await import("../firebase/auth");
+      await signOutUser();
+      
+      // Clear any localStorage data
+      localStorage.clear();
+      
+      // Force navigate to signin
+      navigate("/signin", { replace: true });
+      
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Force logout even if Firebase signout fails
+      setUser(null);
+      localStorage.clear();
+      navigate("/signin", { replace: true });
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const isAuthenticated = !!token;
+  const isAuthenticated = !!user;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        token,
+        user,
         isAuthenticated,
         login,
         logout,
+        loading,
       }}
     >
       {children}
