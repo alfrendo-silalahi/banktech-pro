@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
-import { UserOutlined, LockOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LockOutlined,
+  LoadingOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../context/AuthProvider";
 import { useActivity } from "../context/ActivityProvider";
 import { registerUser } from "../firebase/auth";
@@ -14,28 +19,35 @@ export default function SignUpForm() {
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      logActivity('signup_attempt', 'auth', { username: values.username });
+      logActivity("signup_attempt", "auth", { username: values.username });
 
       const result = await registerUser(
-        values.username, 
-        values.password, 
-        values.firstName, 
-        values.lastName
+        values.email,
+        values.name,
+        values.password
       );
-      
+
       if (result.success) {
-        logActivity('signup_success', 'auth', { 
-          username: values.username, 
-          accountNumber: result.accountNumber 
+        logActivity("signup_success", "auth", {
+          username: values.username,
+          accountNumber: result.accountNumber,
         });
-        login(result.user);
-        message.success(`Account created! Your account number: ${result.accountNumber}`);
+        login(result.user.token);
+        message.success(
+          `Account created! Your account number: ${result.accountNumber}`
+        );
       } else {
-        logActivity('signup_failed', 'auth', { username: values.username, error: result.error });
+        logActivity("signup_failed", "auth", {
+          username: values.username,
+          error: result.error,
+        });
         throw new Error(result.error);
       }
     } catch (err) {
-      logActivity('signup_error', 'auth', { username: values.username, error: err.message });
+      logActivity("signup_error", "auth", {
+        username: values.username,
+        error: err.message,
+      });
       message.error(err.message || "Sign Up Failed!");
     } finally {
       setLoading(false);
@@ -50,46 +62,38 @@ export default function SignUpForm() {
       onFinish={onFinish}
       requiredMark
     >
-      {/* First Name */}
+      {/* Email */}
       <Form.Item
-        label="First Name"
-        name="firstName"
-        rules={[{ required: true, message: "First name is required" }]}
-      >
-        <Input
-          size="large"
-          prefix={<UserOutlined className="mr-1" />}
-          placeholder="Your first name"
-        />
-      </Form.Item>
-
-      {/* Last Name */}
-      <Form.Item
-        label="Last Name"
-        name="lastName"
-        rules={[{ required: true, message: "Last name is required" }]}
-      >
-        <Input
-          size="large"
-          prefix={<UserOutlined className="mr-1" />}
-          placeholder="Your last name"
-        />
-      </Form.Item>
-
-      {/* Username */}
-      <Form.Item
-        label="Username"
-        name="username"
+        label="Email"
+        name="email"
         rules={[
-          { required: true, message: "Username is required" },
-          { min: 3, message: "Username must be at least 3 characters" },
-          { pattern: /^[a-zA-Z0-9_]+$/, message: "Username can only contain letters, numbers, and underscores" }
+          {
+            required: true,
+            message: "Password is required",
+          },
+          {
+            type: "email",
+            message: "Invalid email format",
+          },
         ]}
       >
         <Input
           size="large"
+          placeholder="Your email"
+          prefix={<MailOutlined className="mr-1" />}
+        />
+      </Form.Item>
+
+      {/* Name */}
+      <Form.Item
+        label="Name"
+        name="name"
+        rules={[{ required: true, message: "Name is required" }]}
+      >
+        <Input
+          size="large"
           prefix={<UserOutlined className="mr-1" />}
-          placeholder="Your username"
+          placeholder="Your name"
         />
       </Form.Item>
 
@@ -99,7 +103,7 @@ export default function SignUpForm() {
         name="password"
         rules={[
           { required: true, message: "Password is required" },
-          { min: 6, message: "Password must be at least 6 characters" }
+          { min: 6, message: "Password must be at least 6 characters" },
         ]}
       >
         <Input.Password
@@ -113,15 +117,15 @@ export default function SignUpForm() {
       <Form.Item
         label="Confirm Password"
         name="confirmPassword"
-        dependencies={['password']}
+        dependencies={["password"]}
         rules={[
           { required: true, message: "Please confirm your password" },
           ({ getFieldValue }) => ({
             validator(_, value) {
-              if (!value || getFieldValue('password') === value) {
+              if (!value || getFieldValue("password") === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('Passwords do not match!'));
+              return Promise.reject(new Error("Passwords do not match!"));
             },
           }),
         ]}

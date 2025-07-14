@@ -1,6 +1,9 @@
 import SignInForm from "../components/SignInForm";
+import { useNavigate } from "react-router";
 
 export default function SignIn() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-screen">
       {/* Left Side - Form */}
@@ -8,14 +11,14 @@ export default function SignIn() {
         <div className="max-w-md w-full">
           <h2 className="text-3xl font-bold mb-2">Sign In</h2>
           <p className="text-gray-500 mb-6">
-            Enter your username and password to sign in!
+            Enter your email and password to sign in!
           </p>
           <SignInForm />
           <p className="mt-4">
             Don’t have an account?{" "}
-            <span 
+            <span
               className="font-semibold cursor-pointer text-blue-600 hover:text-blue-800"
-              onClick={() => window.location.href = '/signup'}
+              onClick={() => navigate("/signup")}
             >
               Sign Up
             </span>

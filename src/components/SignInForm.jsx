@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { Form, Input, Button, message } from "antd";
-import { UserOutlined, LockOutlined, LoadingOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LockOutlined,
+  LoadingOutlined,
+  MailOutlined,
+} from "@ant-design/icons";
 import { useAuth } from "../context/AuthProvider";
 import { useActivity } from "../context/ActivityProvider";
 import { signInUser } from "../firebase/auth";
@@ -14,20 +19,27 @@ export default function SignInForm() {
   const onFinish = async (values) => {
     try {
       setLoading(true);
-      logActivity('login_attempt', 'auth', { username: values.username });
+      // logActivity("login_attempt", "auth", { username: values.username });
 
-      const result = await signInUser(values.username, values.password);
-      
+      // Sign in with Firebase
+      const result = await signInUser(values.email, values.password);
+
       if (result.success) {
-        logActivity('login_success', 'auth', { username: values.username });
-        login(result.user);
+        // logActivity("login_success", "auth", { username: values.username });
+        login(result.user.accessToken);
         message.success("Sign in successful!");
       } else {
-        logActivity('login_failed', 'auth', { username: values.username, error: result.error });
+        // logActivity("login_failed", "auth", {
+        //   username: values.username,
+        //   error: result.error,
+        // });
         throw new Error(result.error);
       }
     } catch (err) {
-      logActivity('login_error', 'auth', { username: values.username, error: err.message });
+      // logActivity("login_error", "auth", {
+      //   username: values.username,
+      //   error: err.message,
+      // });
       form.resetFields();
       message.error(err.message || "Sign In Failed!");
     } finally {
@@ -43,16 +55,25 @@ export default function SignInForm() {
       onFinish={onFinish}
       requiredMark
     >
-      {/* Username */}
+      {/* Email */}
       <Form.Item
-        label="Username"
-        name="username"
-        rules={[{ required: true, message: "Username is required" }]}
+        label="Email"
+        name="email"
+        rules={[
+          {
+            required: true,
+            message: "Password is required",
+          },
+          {
+            type: "email",
+            message: "Invalid email format",
+          },
+        ]}
       >
         <Input
           size="large"
-          prefix={<UserOutlined className="mr-1" />}
-          placeholder="Your username"
+          placeholder="Your email"
+          prefix={<MailOutlined className="mr-1" />}
         />
       </Form.Item>
 
