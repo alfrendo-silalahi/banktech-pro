@@ -9,7 +9,7 @@ export default function useTransactions(uid, accountNumber) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const isOnline = useNetworkStatus();
-  const { isReady, saveTransactions, getTransactions } = useIndexedDB();
+  const { isReady, saveTransactions, getTransactions, clearTransactions } = useIndexedDB();
 
   useEffect(() => {
     if (!uid || !accountNumber) {
@@ -40,10 +40,15 @@ export default function useTransactions(uid, accountNumber) {
           setTransactions(out);
           setLoading(false);
           
-          // Save to IndexedDB for offline use
+          // Clear and save fresh data to IndexedDB
           if (isReady && out.length > 0) {
-            saveTransactions(uid, out);
-            console.log('💾 Saved transactions to IndexedDB:', out.length);
+            clearTransactions(uid).then(() => {
+              saveTransactions(uid, out);
+              console.log('💾 Fresh sync transactions to IndexedDB:', out.length);
+            }).catch(err => {
+              console.warn('⚠️ Clear failed, saving anyway:', err);
+              saveTransactions(uid, out);
+            });
           }
         },
         (err) => {

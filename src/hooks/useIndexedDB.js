@@ -85,10 +85,58 @@ export function useIndexedDB() {
     });
   };
 
+  // Clear all transactions for fresh sync
+  const clearTransactions = async (userId) => {
+    if (!db) return;
+    const tx = db.transaction(['transactions'], 'readwrite');
+    const store = tx.objectStore('transactions');
+    const index = store.index('userId');
+    
+    return new Promise((resolve, reject) => {
+      const request = index.getAll(userId);
+      request.onsuccess = () => {
+        const transactions = request.result || [];
+        const deletePromises = transactions.map(t => 
+          new Promise((res, rej) => {
+            const deleteReq = store.delete(t.id);
+            deleteReq.onsuccess = () => res();
+            deleteReq.onerror = () => rej(deleteReq.error);
+          })
+        );
+        Promise.all(deletePromises).then(resolve).catch(reject);
+      };
+      request.onerror = () => reject(request.error);
+    });
+  };
+
+  // Clear all data (for debugging)
+  const clearAllData = async () => {
+    if (!db) return;
+    const tx = db.transaction(['transactions', 'offlineQueue'], 'readwrite');
+    
+    await new Promise((resolve, reject) => {
+      const transactionStore = tx.objectStore('transactions');
+      const clearReq = transactionStore.clear();
+      clearReq.onsuccess = () => resolve();
+      clearReq.onerror = () => reject(clearReq.error);
+    });
+    
+    await new Promise((resolve, reject) => {
+      const queueStore = tx.objectStore('offlineQueue');
+      const clearReq = queueStore.clear();
+      clearReq.onsuccess = () => resolve();
+      clearReq.onerror = () => reject(clearReq.error);
+    });
+    
+    console.log('🧹 IndexedDB cleared');
+  };
+
   return {
     isReady,
     saveTransactions,
     getTransactions,
-    addToOfflineQueue
+    addToOfflineQueue,
+    clearTransactions,
+    clearAllData
   };
 }
