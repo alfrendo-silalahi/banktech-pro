@@ -1,6 +1,6 @@
 // Activity Logger Context Provider
-import { createContext, useContext } from 'react';
-import { useActivityTracker } from '../hooks/useActivityTracker';
+import { createContext, useContext } from "react";
+import { useActivityTracker } from "../hooks/useActivityTracker";
 
 const ActivityContext = createContext();
 
@@ -17,7 +17,7 @@ export function ActivityProvider({ children }) {
 export function useActivity() {
   const context = useContext(ActivityContext);
   if (!context) {
-    throw new Error('useActivity must be used within an ActivityProvider');
+    throw new Error("useActivity must be used within an ActivityProvider");
   }
   return context;
 }
