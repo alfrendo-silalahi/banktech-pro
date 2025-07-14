@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCurrentUser } from "../hooks/useCurrentUser.jsx";
 import { useAccount } from "../context/AccountProvider.jsx";
+import useTransferStore from "../store/transferStore.jsx";
 
 export default function BalanceCard() {
   const [currentCard, setCurrentCard] = useState(0);
@@ -14,24 +15,24 @@ export default function BalanceCard() {
   }, [activeAccountIndex]);
 
   // Create cards from user's bank accounts
-  const cards = currentUserData?.bankAccounts?.map(account => ({
-    balance: new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0
+  const cards = currentUserData?.bankAccounts?.map((account) => ({
+    balance: new Intl.NumberFormat("id-ID", {
+      style: "currency",
+      currency: "IDR",
+      minimumFractionDigits: 0,
     }).format(account.balance || 0),
-    holder: `${currentUserData.firstName} ${currentUserData.lastName}`.toUpperCase(),
+    holder: currentUserData.name.toUpperCase(),
     number: account.accountNumber,
     accountType: account.accountType,
-    isDefault: account.isDefault
+    isDefault: account.isDefault,
   })) || [
     {
       balance: "Rp 0",
       holder: "LOADING...",
       number: "0000000000",
       accountType: "Savings",
-      isDefault: true
-    }
+      isDefault: true,
+    },
   ];
 
   const nextCard = () => {
@@ -71,9 +72,13 @@ export default function BalanceCard() {
       {/* ACCOUNT TYPE & BALANCE */}
       <div className="mb-6 transition-all duration-500 ease-in-out">
         <div className="flex items-center gap-2 mb-1">
-          <p className="text-sm font-medium text-gray-600">{cards[currentCard].accountType?.toUpperCase()} ACCOUNT</p>
+          <p className="text-sm font-medium text-gray-600">
+            {cards[currentCard].accountType?.toUpperCase()} ACCOUNT
+          </p>
           {cards[currentCard].isDefault && (
-            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full font-medium">DEFAULT</span>
+            <span className="px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full font-medium">
+              DEFAULT
+            </span>
           )}
         </div>
         <h1 className="text-2xl font-bold">{cards[currentCard].balance}</h1>

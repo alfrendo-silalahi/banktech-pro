@@ -1,12 +1,13 @@
 // Transfer Wizard Store with Zustand
-import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { transferMoney } from "../firebase/auth";
 
 const TRANSFER_STEPS = {
-  RECIPIENT: 'recipient',
-  AMOUNT: 'amount', 
-  CONFIRMATION: 'confirmation',
-  SUCCESS: 'success'
+  RECIPIENT: "recipient",
+  AMOUNT: "amount",
+  CONFIRMATION: "confirmation",
+  SUCCESS: "success",
 };
 
 const useTransferStore = create(
@@ -16,157 +17,175 @@ const useTransferStore = create(
       currentStep: TRANSFER_STEPS.RECIPIENT,
       currentUserAccount: null,
       transferData: {
-        recipientAccount: '',
-        recipientName: '',
+        recipientAccount: "",
+        recipientName: "",
         amount: 0,
-        description: '',
+        description: "",
         shouldCategorize: false,
-        selectedCategory: null
+        selectedCategory: null,
       },
-      
+
       // UI state
       isLoading: false,
       errors: {},
       isTransitioning: false,
-      
+
       // Step management
       steps: [
-        { id: TRANSFER_STEPS.RECIPIENT, title: 'Recipient', completed: false },
-        { id: TRANSFER_STEPS.AMOUNT, title: 'Amount', completed: false },
-        { id: TRANSFER_STEPS.CONFIRMATION, title: 'Confirmation', completed: false },
-        { id: TRANSFER_STEPS.SUCCESS, title: 'Success', completed: false }
+        { id: TRANSFER_STEPS.RECIPIENT, title: "Recipient", completed: false },
+        { id: TRANSFER_STEPS.AMOUNT, title: "Amount", completed: false },
+        {
+          id: TRANSFER_STEPS.CONFIRMATION,
+          title: "Confirmation",
+          completed: false,
+        },
+        { id: TRANSFER_STEPS.SUCCESS, title: "Success", completed: false },
       ],
 
       // Actions
       setCurrentStep: (step) => set({ currentStep: step }),
-      
+
       nextStep: () => {
         const { currentStep, steps } = get();
-        const currentIndex = steps.findIndex(s => s.id === currentStep);
-        
+        const currentIndex = steps.findIndex((s) => s.id === currentStep);
+
         if (currentIndex < steps.length - 1) {
           set({ isTransitioning: true });
-          
+
           setTimeout(() => {
             const nextStep = steps[currentIndex + 1].id;
-            set(state => ({
+            set((state) => ({
               currentStep: nextStep,
               isTransitioning: false,
-              steps: state.steps.map(step => 
+              steps: state.steps.map((step) =>
                 step.id === currentStep ? { ...step, completed: true } : step
-              )
+              ),
             }));
           }, 150);
         }
       },
-      
+
       prevStep: () => {
         const { currentStep, steps } = get();
-        const currentIndex = steps.findIndex(s => s.id === currentStep);
-        
+        const currentIndex = steps.findIndex((s) => s.id === currentStep);
+
         if (currentIndex > 0) {
           set({ isTransitioning: true });
-          
+
           setTimeout(() => {
             const prevStep = steps[currentIndex - 1].id;
-            set(state => ({
+            set((state) => ({
               currentStep: prevStep,
               errors: {}, // Clear errors when going back
               isTransitioning: false,
-              steps: state.steps.map((step, index) => 
+              steps: state.steps.map((step, index) =>
                 index >= currentIndex ? { ...step, completed: false } : step
-              )
+              ),
             }));
           }, 150);
         }
       },
-      
-      updateTransferData: (data) => set(state => ({
-        transferData: { ...state.transferData, ...data }
-      })),
-      
+
+      updateTransferData: (data) =>
+        set((state) => ({
+          transferData: { ...state.transferData, ...data },
+        })),
+
       setLoading: (loading) => set({ isLoading: loading }),
-      
-      setTransitioning: (transitioning) => set({ isTransitioning: transitioning }),
-      
+
+      setTransitioning: (transitioning) =>
+        set({ isTransitioning: transitioning }),
+
       setErrors: (errors) => set({ errors }),
-      
+
       clearErrors: () => set({ errors: {} }),
-      
-      resetTransfer: () => set({
-        currentStep: TRANSFER_STEPS.RECIPIENT,
-        currentUserAccount: null,
-        transferData: {
-          recipientAccount: '',
-          recipientName: '',
-          amount: 0,
-          description: '',
-          shouldCategorize: false,
-          selectedCategory: null
-        },
-        errors: {},
-        isLoading: false,
-        isTransitioning: false,
-        steps: [
-          { id: TRANSFER_STEPS.RECIPIENT, title: 'Recipient', completed: false },
-          { id: TRANSFER_STEPS.AMOUNT, title: 'Amount', completed: false },
-          { id: TRANSFER_STEPS.CONFIRMATION, title: 'Confirmation', completed: false },
-          { id: TRANSFER_STEPS.SUCCESS, title: 'Success', completed: false }
-        ]
-      }),
+
+      resetTransfer: () =>
+        set({
+          currentStep: TRANSFER_STEPS.RECIPIENT,
+          currentUserAccount: null,
+          transferData: {
+            recipientAccount: "",
+            recipientName: "",
+            amount: 0,
+            description: "",
+            shouldCategorize: false,
+            selectedCategory: null,
+          },
+          errors: {},
+          isLoading: false,
+          isTransitioning: false,
+          steps: [
+            {
+              id: TRANSFER_STEPS.RECIPIENT,
+              title: "Recipient",
+              completed: false,
+            },
+            { id: TRANSFER_STEPS.AMOUNT, title: "Amount", completed: false },
+            {
+              id: TRANSFER_STEPS.CONFIRMATION,
+              title: "Confirmation",
+              completed: false,
+            },
+            { id: TRANSFER_STEPS.SUCCESS, title: "Success", completed: false },
+          ],
+        }),
 
       // Set current user account (called when transfer wizard opens)
-      setCurrentUserAccount: (accountNumber) => set({ currentUserAccount: accountNumber }),
+      setCurrentUserAccount: (accountNumber) =>
+        set({ currentUserAccount: accountNumber }),
 
       // Account lookup
       lookupAccount: async (accountNumber) => {
         set({ isLoading: true, errors: {} });
-        
+
         try {
           const { currentUserAccount } = get();
-          
+
           // Check if trying to transfer to own account
           if (accountNumber === currentUserAccount) {
-            set({ 
+            set({
               isLoading: false,
-              errors: { recipientAccount: 'Cannot transfer to your own account' }
+              errors: {
+                recipientAccount: "Cannot transfer to your own account",
+              },
             });
-            return { success: false, error: 'Cannot transfer to own account' };
+            return { success: false, error: "Cannot transfer to own account" };
           }
-          
+
           // Simulate API call to lookup account
-          await new Promise(resolve => setTimeout(resolve, 1000));
-          
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+
           // Mock account lookup - check against known account numbers
           const mockAccounts = {
-            '8219837001': 'Alfito Doe',
-            '8219837011': 'Alfito Doe',
-            '8219837002': 'Alfrendo Smith',
-            '8219837012': 'Alfrendo Smith',
-            '8219837003': 'Akmal Wilson',
-            '8219837013': 'Akmal Wilson',
-            '8219837023': 'Akmal Wilson'
+            8219837001: "Alfito Doe",
+            8219837011: "Alfito Doe",
+            8219837002: "Alfrendo Smith",
+            8219837012: "Alfrendo Smith",
+            8219837003: "Akmal Wilson",
+            8219837013: "Akmal Wilson",
+            8219837023: "Akmal Wilson",
           };
-          
+
           const recipientName = mockAccounts[accountNumber];
-          
+
           if (recipientName) {
-            set(state => ({
+            set((state) => ({
               transferData: { ...state.transferData, recipientName },
-              isLoading: false
+              isLoading: false,
             }));
             return { success: true, name: recipientName };
           } else {
-            set({ 
+            set({
               isLoading: false,
-              errors: { recipientAccount: 'Account number not found' }
+              errors: { recipientAccount: "Account number not found" },
             });
-            return { success: false, error: 'Account not found' };
+            return { success: false, error: "Account not found" };
           }
         } catch (error) {
-          set({ 
+          set({
             isLoading: false,
-            errors: { recipientAccount: 'Failed to lookup account' }
+            errors: { recipientAccount: "Failed to lookup account" },
           });
           return { success: false, error: error.message };
         }
@@ -176,68 +195,78 @@ const useTransferStore = create(
       validateStep: (step) => {
         const { transferData } = get();
         const errors = {};
-        
+
         switch (step) {
           case TRANSFER_STEPS.RECIPIENT:
             if (!transferData.recipientAccount) {
-              errors.recipientAccount = 'Account number is required';
+              errors.recipientAccount = "Account number is required";
             } else if (!/^\d{10,}$/.test(transferData.recipientAccount)) {
-              errors.recipientAccount = 'Invalid account number format';
+              errors.recipientAccount = "Invalid account number format";
             }
             if (!transferData.recipientName) {
-              errors.recipientAccount = 'Please lookup the account first';
+              errors.recipientAccount = "Please lookup the account first";
             }
             break;
-            
+
           case TRANSFER_STEPS.AMOUNT:
             if (!transferData.amount || transferData.amount <= 0) {
-              errors.amount = 'Amount must be greater than 0';
+              errors.amount = "Amount must be greater than 0";
             } else if (transferData.amount < 10000) {
-              errors.amount = 'Minimum transfer amount is Rp 10,000';
+              errors.amount = "Minimum transfer amount is Rp 10,000";
             } else if (transferData.amount > 100000000) {
-              errors.amount = 'Maximum transfer amount is Rp 100,000,000';
+              errors.amount = "Maximum transfer amount is Rp 100,000,000";
             }
             break;
         }
-        
+
         set({ errors });
         return Object.keys(errors).length === 0;
       },
 
       // Transfer execution
-      executeTransfer: async () => {
-        const { transferData } = get();
-        
+      executeTransfer: async (fromAccountNumber) => {
+        ("transfer uang dimulai");
+        const { currentUserAccount, transferData } = get();
+        "transfer data", { transferData };
+        ({ currentUserAccount });
+        ("transfer uang dimulai 2");
         set({ isLoading: true, errors: {} });
-        
+        ("transfer uang dimulai 3");
         try {
-          await new Promise(resolve => setTimeout(resolve, 2000));
-          
-          if (Math.random() > 0.1) {
-            set({ 
-              currentStep: TRANSFER_STEPS.SUCCESS,
-              isLoading: false,
-              steps: get().steps.map(step => ({ ...step, completed: true }))
-            });
-            return { success: true, transactionId: `TXN${Date.now()}` };
-          } else {
-            throw new Error('Transfer failed. Please try again.');
-          }
+          // await new Promise(resolve => setTimeout(resolve, 2000));
+          "transfer data",
+            fromAccountNumber,
+            transferData.recipientAccount,
+            transferData.amount;
+
+          await transferMoney(
+            fromAccountNumber,
+            transferData.recipientAccount,
+            transferData.amount
+          );
+
+          ("transfer uang dimulai 4");
+          set({
+            currentStep: TRANSFER_STEPS.SUCCESS,
+            isLoading: false,
+            steps: get().steps.map((step) => ({ ...step, completed: true })),
+          });
+          return { success: true, transactionId: `TXN${Date.now()}` };
         } catch (error) {
-          set({ 
-            isLoading: false, 
-            errors: { general: error.message } 
+          set({
+            isLoading: false,
+            errors: { general: error.message },
           });
           return { success: false, error: error.message };
         }
-      }
+      },
     }),
     {
-      name: 'transfer-wizard-storage',
+      name: "transfer-wizard-storage",
       partialize: (state) => ({
         transferData: state.transferData,
-        currentStep: state.currentStep
-      })
+        currentStep: state.currentStep,
+      }),
     }
   )
 );

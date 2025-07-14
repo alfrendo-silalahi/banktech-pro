@@ -9,12 +9,15 @@ import {
 import { useAuth } from "../context/AuthProvider";
 import { useActivity } from "../context/ActivityProvider";
 import { signInUser } from "../firebase/auth";
+import useTransferStore from "../store/transferStore";
 
 export default function SignInForm() {
   const { login } = useAuth();
   const { logActivity } = useActivity();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState(false);
+
+  // const { setCurrentUserAccount } = useTransferStore();
 
   const onFinish = async (values) => {
     try {
@@ -26,7 +29,10 @@ export default function SignInForm() {
 
       if (result.success) {
         // logActivity("login_success", "auth", { username: values.username });
-        login(result.user.accessToken);
+        "login user", result.user;
+        login(result.user);
+        // setCurrentUserAccount("123");
+
         message.success("Sign in successful!");
       } else {
         // logActivity("login_failed", "auth", {
