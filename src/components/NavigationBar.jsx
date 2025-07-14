@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useAuth } from "../context/AuthProvider";
 import { Link } from "react-router-dom";
+import TransferWizard from "../components/TransferWizard";
 
 
 export const Navbar = () => {
@@ -8,6 +9,8 @@ export const Navbar = () => {
   const [isDark, setIsDark] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [showTransferWizard, setShowTransferWizard] = useState(false);
+
 
   const toggleDarkMode = () => {
     setIsDark(!isDark);
@@ -104,7 +107,7 @@ export const Navbar = () => {
       {/* Sidebar Overlay */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-5 z-30 transition-opacity duration-300"
+          className="fixed inset-0 bg-transparent z-30"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -166,15 +169,16 @@ export const Navbar = () => {
               <span className="font-medium">Transactions</span>
             </a>
             
-            <a
-              href="#transfer"
-              className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group"
-            >
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
-              </svg>
-              <span className="font-medium">Transfer Money</span>
-            </a>
+           <button
+            onClick={() => setShowTransferWizard(true)}
+            className="flex items-center gap-3 px-4 py-3 text-gray-700 dark:text-gray-200 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:text-blue-600 dark:hover:text-blue-400 transition-colors group w-full text-left"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+            </svg>
+            <span className="font-medium">Transfer Money</span>
+          </button>
+
             
             <a
               href="#categories"
@@ -217,6 +221,10 @@ export const Navbar = () => {
           </div>
         </div>
       </aside>
+
+      {showTransferWizard && (
+        <TransferWizard onClose={() => setShowTransferWizard(false)} />
+      )}
     </>
   );
 };

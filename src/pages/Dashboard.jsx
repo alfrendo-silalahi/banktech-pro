@@ -10,11 +10,12 @@ import { useActivity } from "../context/ActivityProvider";
 import { useFirebaseTransactions } from "../hooks/useFirebaseTransactions";
 import { AccountProvider } from "../context/AccountProvider.jsx";
 import SummaryChart from "../components/SummaryChart.jsx";
+import Navbar from '../components/NavigationBar.jsx'
 
 
 export default function Dashboard() {
   const { logActivity } = useActivity();
-  const [showTransferWizard, setShowTransferWizard] = useState(false);
+  // const [showTransferWizard, setShowTransferWizard] = useState(false);
 
   useEffect(() => {
     logActivity('dashboard_visit', 'navigation', { page: 'dashboard' });
@@ -23,6 +24,7 @@ export default function Dashboard() {
   return (
     <BaseLayout>
       <AccountProvider>
+        <Navbar />
         <div className="bg-[#F9FAFB]">
           <div className="grid grid-cols-1 md:grid-cols-12 gap-6 p-6 items-stretch">
             {/* <TestSummary />
@@ -56,11 +58,11 @@ export default function Dashboard() {
           </div>
           <div className="mt-10 ml-10 mr-10">
           </div>
-          {/* <TestSummary /> */}
+          <TestSummary />
           
-          {showTransferWizard && (
+          {/* {showTransferWizard && (
             <TransferWizard onClose={() => setShowTransferWizard(false)} />
-          )}
+          )} */}
         </div>
       </AccountProvider>
     </BaseLayout>
