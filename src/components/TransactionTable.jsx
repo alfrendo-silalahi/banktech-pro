@@ -100,12 +100,12 @@ export function TransactionTable() {
           </button>
         </div>
       </div>
+{/* 
+      <SummaryTransaction data={transactions} /> */}
 
-      <SummaryTransaction data={transactions} />
-
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <SummaryChart data={transactions}/>
-      </div>
+      </div> */}
 
       <div className="overflow-x-auto transition-all duration-300">
         <table className="w-full border-collapse mb-4">

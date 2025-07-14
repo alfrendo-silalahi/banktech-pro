@@ -52,7 +52,7 @@ function SummaryTransaction({ data = [] }) {
   }, [data]); // Dependensi 'data' agar kalkulasi diulang jika data berubah
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+    <div className="grid grid-cols-1 gap-4">
       <SummaryTransactionCard
         title="Total Income (This Month)"
         total={ringkasanData.totalIncomeBulanIni}
