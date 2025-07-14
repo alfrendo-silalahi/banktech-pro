@@ -17,7 +17,7 @@ function App() {
             <Route path="/signin" element={<SignIn />} />
             <Route path="/signup" element={<SignUp />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/activitylog" element={<ActivityLogPages />} />
+            <Route path="/activity-log" element={<ActivityLogPages />} />
           </Routes>
         </ActivityProvider>
       </AuthProvider>
