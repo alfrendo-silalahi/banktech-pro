@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import BalanceCard from "../components/BalanceCard";
 import TransactionTable from "../components/TransactionTable";
-import ActivityLog from "../components/ActivityLog";
+import ActivityLog from "../components/ActivityLog.jsx";
 import TransactionCategorization from "../components/TransactionCategorization";
 import TransferWizard from "../components/TransferWizard";
 import BaseLayout from "../layout/BaseLayout";
@@ -37,7 +37,6 @@ export default function Dashboard() {
             <TransactionCategorization />
           </div>
           <div className="mt-10 ml-10 mr-10">
-            <ActivityLog />
           </div>
           <TestSummary />
           

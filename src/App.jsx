@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import SignIn from "./pages/SignIn";
 import SignUp from "./pages/SignUp";
 import SeederPage from "./pages/SeederPage";
+import ActivityLogPages from "./pages/ActivityLogPages";
 
 function App() {
   return (
@@ -17,6 +18,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             {/* <Route path="/seeder" element={<SeederPage />} /> */}
             <Route path="/" element={<SignIn />} />
+            <Route path="/activitylog" element={<ActivityLogPages />} />
           </Routes>
         </ActivityProvider>
       </AuthProvider>

@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router";
 import SignUpForm from "../components/SignUpForm";
 
+  {/* signup */}
 export default function SignUp() {
   const navigate = useNavigate();
 
@@ -38,7 +39,7 @@ export default function SignUp() {
             <h1 className="text-4xl font-bold">BankTech Pro</h1>
           </div>
           <p className="text-center mt-2 px-8">Your Digital Banking Partner</p>
-        </div>
+        </div> 
       </div>
     </div>
   );
